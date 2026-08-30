@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quel est le score marketing de ton entreprise ?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui', 'Arial', 'sans-serif'] },
+        colors: {
+          primary: {
+            50:  '#eef2f9',
+            100: '#dbe3f2',
+            400: '#5b7fb8',
+            500: '#3a5f9e',
+            600: '#2b4a82',
+            700: '#223a63',
+            800: '#1b2f50',
+            900: '#141f37',
+          }
+        },
+        boxShadow: {
+          soft: '0 10px 40px -12px rgba(20, 31, 55, 0.18)',
+          softlg: '0 20px 60px -15px rgba(20, 31, 55, 0.25)',
+        },
+        keyframes: {
+          fadeSlide: {
+            '0%':   { opacity: 0, transform: 'translateY(10px)' },
+            '100%': { opacity: 1, transform: 'translateY(0)' },
+          },
+          popIn: {
+            '0%':   { opacity: 0, transform: 'scale(0.92)' },
+            '100%': { opacity: 1, transform: 'scale(1)' },
+          },
+          growBar: {
+            '0%':   { width: '0%' },
+          },
+        },
+        animation: {
+          fadeSlide: 'fadeSlide 0.45s ease-out both',
+          popIn: 'popIn 0.5s cubic-bezier(0.16,1,0.3,1) both',
+        },
+      }
+    }
+  }
+</script>
+<style>
+  html, body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
+  .bar-fill { transition: width 1s cubic-bezier(0.16,1,0.3,1); }
+  .option-btn { transition: border-color .18s ease, background-color .18s ease, transform .12s ease; }
+  .option-btn:active { transform: scale(0.99); }
+  .screen-enter { animation: fadeSlide .45s ease-out both; }
+  ::selection { background: #223a63; color: #fff; }
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+
+<div class="min-h-screen flex flex-col items-center justify-center px-4 py-8 sm:py-14">
+
+  <div class="w-full max-w-2xl">
+
+    <!-- Progress bar (hidden on intro & result) -->
+    <div id="progress-wrap" class="hidden mb-5 px-1">
+      <div class="flex items-center justify-between mb-2">
+        <span id="progress-label" class="text-xs font-semibold tracking-wide text-primary-600 uppercase">Question 1/20</span>
+        <span id="progress-pct" class="text-xs font-semibold text-gray-400">5%</span>
+      </div>
+      <div class="w-full h-2 bg-gray-200/70 rounded-full overflow-hidden">
+        <div id="progress-fill" class="bar-fill h-full bg-primary-600 rounded-full" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Card -->
+    <div class="bg-white rounded-3xl shadow-softlg p-6 sm:p-10 relative overflow-hidden">
+
+      <!-- INTRO SCREEN -->
+      <div id="screen-intro" class="screen-enter">
+        <div class="inline-flex items-center gap-2 bg-primary-700/5 text-primary-700 text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full mb-5 border border-primary-700/10">
+          Diagnostic marketing gratuit
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-primary-900 leading-tight mb-4">
+          Quel est le score marketing de ton entreprise ? <span class="text-primary-500">(sur 100)</span>
+        </h1>
+        <p class="text-gray-500 text-base sm:text-lg leading-relaxed mb-8">
+          Réponds à 20 questions et découvre ce qui empêche ton marketing de générer plus de clients.
+        </p>
+        <button id="start-btn" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary-700 hover:bg-primary-600 text-white font-bold text-base rounded-xl px-8 py-4 shadow-soft transition-colors">
+          Commencer le quiz
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+        <p class="text-xs text-gray-400 mt-4">⏱️ 3 à 4 minutes &middot; 20 questions rapides &middot; résultat immédiat</p>
+      </div>
+
+      <!-- QUESTION SCREEN -->
+      <div id="screen-question" class="hidden">
+        <button id="back-btn" class="hidden inline-flex items-center gap-1 text-xs font-semibold text-gray-400 hover:text-primary-600 mb-4 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          Question précédente
+        </button>
+        <div id="cat-label" class="text-xs font-bold uppercase tracking-wider text-primary-500 mb-2"></div>
+        <h2 id="question-text" class="text-xl sm:text-2xl font-bold text-gray-900 leading-snug mb-6"></h2>
+        <div id="options-wrap" class="flex flex-col gap-3"></div>
+      </div>
+
+      <!-- RESULT SCREEN -->
+      <div id="screen-result" class="hidden screen-enter">
+
+        <p class="text-center text-xs font-bold uppercase tracking-wider text-primary-500 mb-1">Score marketing global</p>
+        <p class="text-center text-sm text-gray-400 mb-6">Voici ton diagnostic</p>
+
+        <!-- Score ring -->
+        <div class="flex justify-center mb-8">
+          <div class="relative w-44 h-44 sm:w-48 sm:h-48">
+            <svg viewBox="0 0 160 160" class="w-full h-full -rotate-90">
+              <circle cx="80" cy="80" r="70" fill="none" stroke="#eef2f9" stroke-width="14"/>
+              <circle id="score-ring" cx="80" cy="80" r="70" fill="none" stroke="#223a63" stroke-width="14"
+                stroke-linecap="round" stroke-dasharray="439.8" stroke-dashoffset="439.8"
+                style="transition: stroke-dashoffset 1.2s cubic-bezier(0.16,1,0.3,1);"/>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span id="score-number" class="text-5xl font-extrabold text-primary-900">0</span>
+              <span class="text-xs font-semibold text-gray-400 mt-1">/ 100</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sub-scores -->
+        <div id="subscores-wrap" class="flex flex-col gap-3 mb-8"></div>
+
+        <!-- Diagnostic -->
+        <div class="bg-primary-50 border-l-4 border-primary-600 rounded-r-2xl p-5 mb-6">
+          <p id="diag-title" class="font-extrabold text-primary-800 mb-2"></p>
+          <p id="diag-intro" class="text-sm text-gray-700 leading-relaxed mb-3"></p>
+          <p id="diag-body" class="text-sm text-gray-700 leading-relaxed mb-3"></p>
+          <p id="diag-priority" class="text-sm font-bold text-primary-800"></p>
+        </div>
+
+        <p class="text-sm text-gray-500 leading-relaxed mb-6">
+          Ton marketing pourrait faire beaucoup mieux. C'est exactement ce qu'on travaille avec toi et ton équipe : positionnement, contenu, acquisition et conversion, pour transformer ton marketing en véritable moteur de croissance.
+        </p>
+
+        <a id="cta-btn" href="#" class="w-full inline-flex items-center justify-center gap-2 text-center bg-primary-700 hover:bg-primary-600 text-white font-bold text-base sm:text-lg rounded-xl px-6 py-4 sm:py-5 shadow-soft transition-colors">
+          Découvre comment améliorer ton marketing 👇
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ---------------------------------------------------------------------
+  // DATA
+  // ---------------------------------------------------------------------
+  const CATEGORIES = [
+    { key: 'acquisition', label: 'Acquisition' },
+    { key: 'conversion',  label: 'Conversion' },
+    { key: 'previsibilite', label: 'Prévisibilité' },
+    { key: 'contenu', label: 'Contenu & visibilité' },
+    { key: 'equipe', label: 'Équipe & systèmes' },
+  ];
+
+  const QUESTIONS = [
+    // --- Acquisition ---
+    { cat: 'acquisition', text: "Combien de nouveaux prospects qualifiés te contactent chaque semaine ?", options: [
+      { text: "Quasiment aucun, je vais les chercher moi-même", pts: 0 },
+      { text: "1 ou 2, de façon irrégulière", pts: 2 },
+      { text: "Entre 3 et 10, assez régulièrement", pts: 3.5 },
+      { text: "Plus de 10, ça rentre tout seul", pts: 5 },
+    ]},
+    { cat: 'acquisition', text: "D'où viennent tes clients aujourd'hui ?", options: [
+      { text: "Bouche-à-oreille uniquement, je maîtrise rien", pts: 0 },
+      { text: "Surtout du bouche-à-oreille + un peu de contenu", pts: 2 },
+      { text: "Un canal qui marche que j'alimente activement", pts: 3.5 },
+      { text: "Plusieurs canaux qui tournent en même temps", pts: 5 },
+    ]},
+    { cat: 'acquisition', text: "Si tu devais doubler ton nombre de prospects le mois prochain, tu saurais exactement quoi faire ?", options: [
+      { text: "Aucune idée, je croiserais les doigts", pts: 0 },
+      { text: "J'ai des pistes mais jamais testées", pts: 2 },
+      { text: "Je sais quoi faire mais pas le temps de le faire", pts: 3.5 },
+      { text: "Oui, j'aurais juste à pousser ce qui marche déjà", pts: 5 },
+    ]},
+    { cat: 'acquisition', text: "Ton dernier client est arrivé comment ?", options: [
+      { text: "Il m'a trouvé par hasard / recommandation", pts: 0 },
+      { text: "Une vieille connexion réactivée", pts: 2 },
+      { text: "Via mon contenu ou ma pub", pts: 3.5 },
+      { text: "Via mon tunnel, sans que je fasse rien de spécial", pts: 5 },
+    ]},
+    // --- Conversion ---
+    { cat: 'conversion', text: "Quand quelqu'un découvre ton offre, il comprend en 10 secondes ce que tu vends et pour qui ?", options: [
+      { text: "Franchement non, je dois toujours expliquer", pts: 0 },
+      { text: "À peu près, mais y a souvent des confusions", pts: 2 },
+      { text: "Oui pour mon audience chaude", pts: 3.5 },
+      { text: "Oui, même un inconnu comprend direct", pts: 5 },
+    ]},
+    { cat: 'conversion', text: "Sur 10 appels de vente, combien tu closes ?", options: [
+      { text: "Je fais quasi pas d'appels", pts: 0 },
+      { text: "1 ou 2", pts: 2 },
+      { text: "3 à 5", pts: 3.5 },
+      { text: "Plus de 5", pts: 5 },
+    ]},
+    { cat: 'conversion', text: "Est-ce que t'as des preuves visibles (témoignages, résultats chiffrés) là où tes prospects passent ?", options: [
+      { text: "Non, tout est dans ma tête ou en privé", pts: 0 },
+      { text: "Quelques captures d'écran qui traînent", pts: 2 },
+      { text: "Oui, quelques témoignages propres", pts: 3.5 },
+      { text: "Oui, des preuves partout : page, contenu, appels", pts: 5 },
+    ]},
+    { cat: 'conversion', text: "Quand un prospect dit « c'est trop cher », il se passe quoi ?", options: [
+      { text: "Je baisse mon prix ou je le perds", pts: 0 },
+      { text: "Je défends mal mon prix, ça dépend des jours", pts: 2 },
+      { text: "J'ai des arguments qui marchent une fois sur deux", pts: 3.5 },
+      { text: "Ça arrive rarement : la valeur est évidente avant le prix", pts: 5 },
+    ]},
+    // --- Prévisibilité ---
+    { cat: 'previsibilite', text: "Tu pars 2 semaines en vacances SANS téléphone. À ton retour, il s'est passé quoi ?", options: [
+      { text: "Zéro prospect, zéro vente, tout s'est arrêté", pts: 0 },
+      { text: "Quelques messages mais rien n'a avancé", pts: 2 },
+      { text: "Le contenu a continué mais pas les ventes", pts: 3.5 },
+      { text: "Des prospects sont entrés et des appels sont bookés", pts: 5 },
+    ]},
+    { cat: 'previsibilite', text: "Tu peux prédire ton chiffre du mois prochain à ±20% ?", options: [
+      { text: "Impossible, c'est la loterie chaque mois", pts: 0 },
+      { text: "Vaguement, selon mon feeling", pts: 2 },
+      { text: "Oui, si je fournis le même effort que ce mois-ci", pts: 3.5 },
+      { text: "Oui, mes chiffres sont réguliers depuis des mois", pts: 5 },
+    ]},
+    { cat: 'previsibilite', text: "Ton marketing dépend à combien de % de TA présence (ta tête, ta voix, ton temps) ?", options: [
+      { text: "100%, si j'arrête tout s'arrête", pts: 0 },
+      { text: "80%, on m'aide un peu sur l'exécution", pts: 2 },
+      { text: "50%, une partie tourne sans moi", pts: 3.5 },
+      { text: "Moins de 30%, je supervise", pts: 5 },
+    ]},
+    { cat: 'previsibilite', text: "Combien de temps s'écoule entre « je poste » et « ça me rapporte un client » ?", options: [
+      { text: "Aucune idée, je vois pas le lien", pts: 0 },
+      { text: "Des mois, et encore, c'est flou", pts: 2 },
+      { text: "Quelques semaines, je commence à voir le chemin", pts: 3.5 },
+      { text: "Je connais mon cycle : je sais ce qu'un contenu/une pub me rapporte", pts: 5 },
+    ]},
+    // --- Contenu & visibilité ---
+    { cat: 'contenu', text: "Tu publies à quelle fréquence, tous canaux confondus ?", options: [
+      { text: "Quand j'ai le temps, donc rarement", pts: 0 },
+      { text: "1 à 2 fois par semaine, irrégulier", pts: 2 },
+      { text: "Plusieurs fois par semaine, régulier", pts: 3.5 },
+      { text: "Tous les jours ou presque, sans que ça repose que sur moi", pts: 5 },
+    ]},
+    { cat: 'contenu', text: "Ton contenu parle à qui ?", options: [
+      { text: "Un peu à tout le monde", pts: 0 },
+      { text: "À mon marché, mais large", pts: 2 },
+      { text: "À un avatar précis que je connais bien", pts: 3.5 },
+      { text: "À UN avatar précis, avec ses mots à lui, et il se reconnaît", pts: 5 },
+    ]},
+    { cat: 'contenu', text: "Est-ce que t'as déjà testé la pub payante ?", options: [
+      { text: "Jamais", pts: 0 },
+      { text: "Une fois, j'ai cramé du budget sans résultat", pts: 2 },
+      { text: "Oui, des résultats corrects mais pas scalés", pts: 3.5 },
+      { text: "Oui, j'ai des pubs rentables qui tournent", pts: 5 },
+    ]},
+    { cat: 'contenu', text: "Si je tape ton nom ou ton business sur Google/Insta, je trouve quoi ?", options: [
+      { text: "Pas grand-chose", pts: 0 },
+      { text: "Un profil à moitié à jour", pts: 2 },
+      { text: "Un profil propre avec du contenu récent", pts: 3.5 },
+      { text: "Un écosystème : contenu, preuves, tunnel, page", pts: 5 },
+    ]},
+    // --- Équipe & systèmes ---
+    { cat: 'equipe', text: "Qui produit ton marketing aujourd'hui ?", options: [
+      { text: "Moi, tout seul, à 23h", pts: 0 },
+      { text: "Moi + un freelance de temps en temps", pts: 2 },
+      { text: "Une petite équipe mais je dois tout vérifier", pts: 3.5 },
+      { text: "Une équipe qui produit, moi je valide la stratégie", pts: 5 },
+    ]},
+    { cat: 'equipe', text: "T'as des process écrits pour ton marketing (trames, calendrier, templates) ?", options: [
+      { text: "Rien, tout est dans ma tête", pts: 0 },
+      { text: "Quelques notes éparpillées", pts: 2 },
+      { text: "Les tâches principales sont documentées", pts: 3.5 },
+      { text: "Tout est process : quelqu'un peut reprendre demain", pts: 5 },
+    ]},
+    { cat: 'equipe', text: "Tu connais tes chiffres marketing (coût par prospect, taux de conversion, CA par canal) ?", options: [
+      { text: "Aucun", pts: 0 },
+      { text: "Je regarde les likes et les vues", pts: 2 },
+      { text: "Je suis 2-3 chiffres clés", pts: 3.5 },
+      { text: "J'ai un tableau de bord et je décide avec", pts: 5 },
+    ]},
+    { cat: 'equipe', text: "Il se passe quoi si ton meilleur canal s'arrête demain (compte suspendu, algo qui change) ?", options: [
+      { text: "Je perds tout", pts: 0 },
+      { text: "Gros coup dur, je repartirais de loin", pts: 2 },
+      { text: "Ça ferait mal mais j'ai un plan B", pts: 3.5 },
+      { text: "Rien de grave : plusieurs canaux + une liste email à moi", pts: 5 },
+    ]},
+  ];
+
+  const DIAGNOSTICS = {
+    acquisition: {
+      title: "Ton plus gros frein : Acquisition",
+      body: "Ton entreprise ne dispose pas encore d'un système suffisamment prévisible pour générer de nouvelles opportunités chaque semaine. Tu dépends trop du hasard, du bouche-à-oreille ou de coups ponctuels.",
+      priority: "Priorité #1 : construire une acquisition prévisible.",
+    },
+    conversion: {
+      title: "Ton plus gros frein : Conversion",
+      body: "Des prospects arrivent, mais une partie trop importante repart sans devenir client. Le problème n'est pas ton offre en elle-même, c'est la manière dont elle est présentée et défendue au moment de la vente.",
+      priority: "Priorité #1 : structurer un processus de vente qui converti plus régulièrement.",
+    },
+    previsibilite: {
+      title: "Ton plus gros frein : Prévisibilité",
+      body: "Ton marketing fonctionne par moments, mais il repose encore trop sur toi et sur des coups ponctuels. Rien ne garantit que les résultats de ce mois se répètent le mois prochain.",
+      priority: "Priorité #1 : mettre en place un système qui produit des résultats réguliers, même quand tu n'es pas dessus.",
+    },
+    contenu: {
+      title: "Ton plus gros frein : Contenu & visibilité",
+      body: "Tu as les bases, mais ta présence ne suffit pas encore à te rendre incontournable aux yeux de ton audience. Résultat : trop de prospects passent à côté de toi avant même de découvrir ton offre.",
+      priority: "Priorité #1 : construire une visibilité qui touche la bonne audience, avec régularité.",
+    },
+    equipe: {
+      title: "Ton plus gros frein : Équipe & systèmes",
+      body: "Ton marketing dépend encore trop de toi seul(e). Sans process clairs ni personne pour exécuter à ta place, chaque euro de croissance supplémentaire te coûte plus de temps.",
+      priority: "Priorité #1 : documenter et déléguer pour que ton marketing tourne sans reposer uniquement sur tes épaules.",
+    },
+  };
+
+  const SCORE_CAP = 0.8; // le score max ne dépasse jamais 80/100
+  const VSL_URL = 'https://www.multipreneur.fr/accompagnement-ceo-a';
+
+  // ---------------------------------------------------------------------
+  // STATE
+  // ---------------------------------------------------------------------
+  let current = 0;
+  const answers = new Array(QUESTIONS.length).fill(null); // stores pts per question
+
+  // ---------------------------------------------------------------------
+  // DOM refs
+  // ---------------------------------------------------------------------
+  const screenIntro = document.getElementById('screen-intro');
+  const screenQuestion = document.getElementById('screen-question');
+  const screenResult = document.getElementById('screen-result');
+  const progressWrap = document.getElementById('progress-wrap');
+  const progressLabel = document.getElementById('progress-label');
+  const progressPct = document.getElementById('progress-pct');
+  const progressFill = document.getElementById('progress-fill');
+  const catLabel = document.getElementById('cat-label');
+  const questionText = document.getElementById('question-text');
+  const optionsWrap = document.getElementById('options-wrap');
+  const backBtn = document.getElementById('back-btn');
+
+  function showScreen(el) {
+    [screenIntro, screenQuestion, screenResult].forEach(s => s.classList.add('hidden'));
+    el.classList.remove('hidden');
+    el.classList.remove('screen-enter');
+    void el.offsetWidth; // restart animation
+    el.classList.add('screen-enter');
+  }
+
+  // ---------------------------------------------------------------------
+  // INTRO -> QUIZ
+  // ---------------------------------------------------------------------
+  document.getElementById('start-btn').addEventListener('click', () => {
+    progressWrap.classList.remove('hidden');
+    current = 0;
+    renderQuestion();
+    showScreen(screenQuestion);
+  });
+
+  // ---------------------------------------------------------------------
+  // QUESTION RENDERING
+  // ---------------------------------------------------------------------
+  function renderQuestion() {
+    const q = QUESTIONS[current];
+    const catInfo = CATEGORIES.find(c => c.key === q.cat);
+
+    catLabel.textContent = catInfo.label;
+    questionText.textContent = q.text;
+    optionsWrap.innerHTML = '';
+
+    q.options.forEach((opt, i) => {
+      const selected = answers[current] === opt.pts;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'option-btn w-full text-left rounded-2xl border-2 px-5 py-4 flex items-center gap-3 ' +
+        (selected
+          ? 'border-primary-600 bg-primary-50'
+          : 'border-gray-200 hover:border-primary-300 hover:bg-primary-50/40');
+      btn.innerHTML = `
+        <span class="flex-shrink-0 w-5 h-5 rounded-full border-2 ${selected ? 'border-primary-600 bg-primary-600' : 'border-gray-300'} flex items-center justify-center">
+          ${selected ? '<svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>' : ''}
+        </span>
+        <span class="text-sm sm:text-base text-gray-800 leading-snug">${opt.text}</span>
+      `;
+      btn.addEventListener('click', () => selectOption(opt.pts));
+      optionsWrap.appendChild(btn);
+    });
+
+    // progress
+    const num = current + 1;
+    progressLabel.textContent = `Question ${num}/${QUESTIONS.length}`;
+    const pct = Math.round((num / QUESTIONS.length) * 100);
+    progressPct.textContent = pct + '%';
+    progressFill.style.width = pct + '%';
+
+    backBtn.classList.toggle('hidden', current === 0);
+
+    // re-animate question block
+    screenQuestion.classList.remove('screen-enter');
+    void screenQuestion.offsetWidth;
+    screenQuestion.classList.add('screen-enter');
+  }
+
+  function selectOption(pts) {
+    answers[current] = pts;
+    renderQuestion(); // re-render to show selected state immediately
+
+    setTimeout(() => {
+      if (current < QUESTIONS.length - 1) {
+        current++;
+        renderQuestion();
+      } else {
+        progressWrap.classList.add('hidden');
+        renderResult();
+        showScreen(screenResult);
+      }
+    }, 350);
+  }
+
+  backBtn.addEventListener('click', () => {
+    if (current > 0) {
+      current--;
+      renderQuestion();
+    }
+  });
+
+  // ---------------------------------------------------------------------
+  // SCORING
+  // ---------------------------------------------------------------------
+  function computeScores() {
+    const catRaw = {};
+    CATEGORIES.forEach(c => catRaw[c.key] = 0);
+    answers.forEach((pts, i) => {
+      catRaw[QUESTIONS[i].cat] += pts;
+    });
+
+    const catScores = {};
+    CATEGORIES.forEach(c => {
+      // 4 questions par catégorie, max brut = 20
+      catScores[c.key] = Math.round((catRaw[c.key] / 20) * 100 * SCORE_CAP);
+    });
+
+    const globalRaw = Object.values(catRaw).reduce((a, b) => a + b, 0); // max 100
+    const globalScore = Math.round(globalRaw * SCORE_CAP);
+
+    return { catScores, globalScore };
+  }
+
+  // ---------------------------------------------------------------------
+  // RESULT RENDERING
+  // ---------------------------------------------------------------------
+  function renderResult() {
+    const { catScores, globalScore } = computeScores();
+
+    // animated ring
+    const circumference = 439.8;
+    const ring = document.getElementById('score-ring');
+    const offset = circumference - (globalScore / 100) * circumference;
+    ring.style.strokeDashoffset = circumference; // reset
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => { ring.style.strokeDashoffset = offset; });
+    });
+
+    // animated count-up
+    const numberEl = document.getElementById('score-number');
+    animateCount(numberEl, globalScore, 1100);
+
+    // sub-scores
+    const wrap = document.getElementById('subscores-wrap');
+    wrap.innerHTML = '';
+    const sorted = [...CATEGORIES]; // keep original order for readability
+    sorted.forEach(c => {
+      const score = catScores[c.key];
+      const row = document.createElement('div');
+      row.innerHTML = `
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-sm font-semibold text-gray-700">${c.label}</span>
+          <span class="text-sm font-bold text-primary-700">${score}/100</span>
+        </div>
+        <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+          <div class="bar-fill h-full bg-primary-500 rounded-full" style="width:0%" data-target="${score}"></div>
+        </div>
+      `;
+      wrap.appendChild(row);
+    });
+    requestAnimationFrame(() => {
+      wrap.querySelectorAll('[data-target]').forEach(bar => {
+        bar.style.width = bar.dataset.target + '%';
+      });
+    });
+
+    // diagnostic: weakest category
+    let weakestKey = CATEGORIES[0].key;
+    let strongestKey = CATEGORIES[0].key;
+    CATEGORIES.forEach(c => {
+      if (catScores[c.key] < catScores[weakestKey]) weakestKey = c.key;
+      if (catScores[c.key] > catScores[strongestKey]) strongestKey = c.key;
+    });
+    const strongestLabel = CATEGORIES.find(c => c.key === strongestKey).label;
+    const diag = DIAGNOSTICS[weakestKey];
+
+    document.getElementById('diag-title').textContent = diag.title;
+    document.getElementById('diag-intro').textContent =
+      `Sur les 5 piliers testés, ${strongestLabel} ressort comme ton point le plus solide (${catScores[strongestKey]}/100). Mais ton score global de ${globalScore}/100 montre qu'il reste une vraie marge de progression ailleurs.`;
+    document.getElementById('diag-body').textContent = diag.body;
+    document.getElementById('diag-priority').textContent = diag.priority;
+
+    document.getElementById('cta-btn').setAttribute('href', VSL_URL);
+  }
+
+  function animateCount(el, target, duration) {
+    const start = 0;
+    const startTime = performance.now();
+    function tick(now) {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = Math.round(start + (target - start) * eased);
+      el.textContent = value;
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+})();
+</script>
+</body>
+</html>
